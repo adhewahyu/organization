@@ -54,7 +54,7 @@ class GetEmployeeByIdServiceTest {
     void shouldSuccessWithoutDirectReports(){
         init();
         MockitoAnnotations.openMocks(this);
-        String expected = "{\"directReports\":[],\"employeeId\":3,\"name\":\"Clark Kent\"}";
+        String expected = "{\"employeeId\":3,\"name\":\"Clark Kent\"}";
         EmployeeByIdResponse employeeByIdResponse = getEmployeeByIdService.execute(FindByIdAndReportingFlagRequest.builder()
                 .id(3)
                 .includeReportingFlag(false)

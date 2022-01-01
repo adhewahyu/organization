@@ -58,7 +58,7 @@ public class GetEmployeeByIdService implements BaseService<FindByIdAndReportingF
                         .includeReportingFlag(includeDirectReports)
                         .build()) : null)
                 .directReports(isAnyDirectReports(includeDirectReports, employeeResponse.getEmployeeId()) ?
-                        getEmployeeListByManagerId(employeeResponse.getEmployeeId()).getEmployeeResponseList() : Collections.emptyList())
+                        getEmployeeListByManagerId(employeeResponse.getEmployeeId()).getEmployeeResponseList() : null)
                 .build();
     }
 
@@ -76,7 +76,7 @@ public class GetEmployeeByIdService implements BaseService<FindByIdAndReportingF
                     .collect(Collectors.toList());
         }
         if(CollectionUtils.isEmpty(employeeResponseList)){
-            employeeResponseList = Collections.emptyList();
+            employeeResponseList = null;
         }
         log.info("GetEmployeeListByManagerIdService [end]");
         return EmployeeListResponse.builder()
