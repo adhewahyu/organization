@@ -1,7 +1,6 @@
 package code.dan.organization.service;
 
 import code.dan.organization.model.request.FindByIdAndReportingFlagRequest;
-import code.dan.organization.model.request.FindByIdRequest;
 import code.dan.organization.model.response.EmployeeByIdResponse;
 import code.dan.organization.model.response.EmployeeListResponse;
 import code.dan.organization.model.response.EmployeeResponse;
@@ -11,9 +10,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -21,7 +25,6 @@ import java.util.concurrent.atomic.AtomicReference;
 public class GetEmployeeByIdService implements BaseService<FindByIdAndReportingFlagRequest, EmployeeByIdResponse>{
 
     private final EmployeeListResponse defineEmployees;
-    private final GetEmployeeListByManagerIdService getEmployeeListByManagerIdService;
 
     @Override
     public EmployeeByIdResponse execute(FindByIdAndReportingFlagRequest input) {
@@ -54,14 +57,31 @@ public class GetEmployeeByIdService implements BaseService<FindByIdAndReportingF
                         .id(employeeResponse.getManagerId())
                         .includeReportingFlag(includeDirectReports)
                         .build()) : null)
-                .directReports(isAnyDirectReports(includeDirectReports, employeeResponse.getEmployeeId()) ? getEmployeeListByManagerIdService.execute(FindByIdRequest.builder()
-                                .id(employeeResponse.getEmployeeId())
-                        .build()).getEmployeeResponseList() : null)
+                .directReports(isAnyDirectReports(includeDirectReports, employeeResponse.getEmployeeId()) ?
+                        getEmployeeListByManagerId(employeeResponse.getEmployeeId()).getEmployeeResponseList() : Collections.emptyList())
                 .build();
     }
 
     private Boolean isAnyDirectReports(Boolean includeDirectReports, Integer managerId){
         return (ObjectUtils.isNotEmpty(includeDirectReports) && includeDirectReports && ObjectUtils.isNotEmpty(managerId));
+    }
+
+    private EmployeeListResponse getEmployeeListByManagerId(Integer managerId){
+        List<EmployeeResponse> employeeResponseList = new ArrayList<>();
+        if (ObjectUtils.isNotEmpty(managerId)) {
+            employeeResponseList = defineEmployees.getEmployeeResponseList().stream()
+                    .filter(employeeResponse -> ObjectUtils.isNotEmpty(employeeResponse.getManagerId())
+                            && employeeResponse.getManagerId().compareTo(managerId) == 0)
+                    .peek(employee->log.info("employee id = {} report directly to = {}",employee.getEmployeeId(),managerId))
+                    .collect(Collectors.toList());
+        }
+        if(CollectionUtils.isEmpty(employeeResponseList)){
+            employeeResponseList = Collections.emptyList();
+        }
+        log.info("GetEmployeeListByManagerIdService [end]");
+        return EmployeeListResponse.builder()
+                .employeeResponseList(employeeResponseList)
+                .build();
     }
 
 }

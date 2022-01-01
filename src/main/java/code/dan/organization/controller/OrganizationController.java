@@ -2,12 +2,10 @@ package code.dan.organization.controller;
 
 import code.dan.organization.model.request.EmptyRequest;
 import code.dan.organization.model.request.FindByIdAndReportingFlagRequest;
-import code.dan.organization.model.request.FindByIdRequest;
 import code.dan.organization.model.response.EmployeeByIdResponse;
 import code.dan.organization.model.response.EmployeeListResponse;
 import code.dan.organization.model.response.RestResponse;
 import code.dan.organization.service.GetEmployeeByIdService;
-import code.dan.organization.service.GetEmployeeListByManagerIdService;
 import code.dan.organization.service.GetEmployeeService;
 import code.dan.organization.util.Constants;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +23,6 @@ public class OrganizationController {
 
     private final GetEmployeeService getEmployeeService;
     private final GetEmployeeByIdService getEmployeeByIdService;
-    private final GetEmployeeListByManagerIdService getEmployeeListByManagerIdService;
 
     @GetMapping("/v1/employees")
     public ResponseEntity<RestResponse> getEmployees(){
