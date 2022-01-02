@@ -9,10 +9,6 @@ import code.dan.organization.service.GetEmployeeByIdService;
 import code.dan.organization.service.GetEmployeeService;
 import code.dan.organization.util.Constants;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
@@ -33,9 +29,6 @@ public class OrganizationController {
 
     @GetMapping("/v1/employees")
     @Operation(summary = "Get All Employees", description = "API to get list of employees")
-    @ApiResponse(responseCode = "200", description = Constants.SUCCESS_MSG_DATA_FOUND)
-    @ApiResponse(responseCode = "404", description = Constants.ERR_MSG_DATA_NOT_FOUND)
-    @ApiResponse(responseCode = "500", description = Constants.ERR_MSG_SOMETHING_WENT_WRONG)
     public ResponseEntity<RestResponse> getEmployees(){
         EmployeeListResponse employeeListResponse = getEmployeeService.execute(new EmptyRequest());
         if(!CollectionUtils.isEmpty(employeeListResponse.getEmployeeResponseList())){
@@ -46,13 +39,9 @@ public class OrganizationController {
 
     @GetMapping("/v1/employees/{employeeId}")
     @Operation(summary = "Get Employees By Id", description = "API to get employee by employee id, with reporting tree if requested")
-    @ApiResponse(responseCode = "200", description = Constants.SUCCESS_MSG_DATA_FOUND)
-    @ApiResponse(responseCode = "403", description = Constants.ERR_MSG_BAD_REQUEST)
-    @ApiResponse(responseCode = "404", description = Constants.ERR_MSG_DATA_NOT_FOUND)
-    @ApiResponse(responseCode = "500", description = Constants.ERR_MSG_SOMETHING_WENT_WRONG)
     public ResponseEntity<RestResponse> getEmployees(
-            @Parameter(name = "Employee Id", description = "Requested employee Id" ,required = true) @PathVariable Integer employeeId,
-            @Parameter(name = "Include Reporting Tree", description = "Set value to true for include reporting tree")@RequestParam(value = "includeReportingTree", required = false) Boolean includeReportingTree){
+            @PathVariable Integer employeeId,
+            @RequestParam(value = "includeReportingTree", required = false) Boolean includeReportingTree){
         EmployeeByIdResponse employeeByIdResponse = getEmployeeByIdService.execute(FindByIdAndReportingFlagRequest.builder()
                         .id(employeeId)
                         .includeReportingFlag(includeReportingTree)
