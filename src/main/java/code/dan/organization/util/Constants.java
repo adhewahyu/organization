@@ -6,5 +6,6 @@ public class Constants {
 
     public static final String ERR_MSG_DATA_NOT_FOUND = "Data is not found";
     public static final String ERR_MSG_BAD_REQUEST = "Invalid request";
+    public static final String ERR_MSG_SOMETHING_WENT_WRONG = "Something went wrong";
 
 }
